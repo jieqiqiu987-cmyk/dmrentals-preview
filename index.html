@@ -1,16 +1,48 @@
 <!doctype html>
 <html lang="zh-CN">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>雕马原型预览库</title>
-<style>
-:root{--ink:#1d2433;--muted:#697386;--brand:#5a46e8;--wash:#f5f6fb}*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;color:var(--ink);background:radial-gradient(circle at 80% -10%,#e7e3ff 0,transparent 32%),var(--wash)}header,main,footer{width:min(1120px,calc(100% - 40px));margin:auto}header{padding:72px 0 34px}.eyebrow{display:inline-flex;padding:7px 12px;border:1px solid #d8d3ff;border-radius:999px;color:var(--brand);background:#f2f0ff;font-size:13px;font-weight:650}h1{margin:18px 0 12px;font-size:clamp(34px,6vw,58px);line-height:1.06;letter-spacing:-.035em}.lead{margin:0;color:var(--muted);font-size:17px;line-height:1.8}.meta{display:flex;gap:20px;margin-top:20px;color:var(--muted);font-size:13px}.empty{margin:12px 0 64px;padding:72px 24px;border:1px dashed #cfd3df;border-radius:20px;text-align:center;background:rgba(255,255,255,.7)}.empty-icon{color:#7667f2;font-size:42px}.empty h2{margin:12px 0 8px}.empty p{margin:0;color:var(--muted)}footer{padding-bottom:36px;color:#9299a8;font-size:12px}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>雕马原型预览库</title>
+  <style>
+    :root { color-scheme: light; --ink:#1d2433; --muted:#697386; --line:#e8eaf0; --brand:#5a46e8; --brand2:#7667f2; --paper:#fff; --wash:#f5f6fb; }
+    * { box-sizing:border-box; }
+    body { margin:0; min-height:100vh; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif; color:var(--ink); background:radial-gradient(circle at 80% -10%,#e7e3ff 0,transparent 32%),var(--wash); }
+    header,main,footer { width:min(1120px,calc(100% - 40px)); margin:auto; }
+    header { padding:72px 0 34px; }
+    .eyebrow { display:inline-flex; padding:7px 12px; border:1px solid #d8d3ff; border-radius:999px; color:var(--brand); background:#f2f0ff; font-size:13px; font-weight:650; }
+    h1 { margin:18px 0 12px; font-size:clamp(34px,6vw,58px); line-height:1.06; letter-spacing:-.035em; }
+    .lead { margin:0; color:var(--muted); font-size:17px; line-height:1.8; }
+    .meta { display:flex; gap:20px; margin-top:20px; color:var(--muted); font-size:13px; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:18px; padding:12px 0 64px; }
+    .card { display:flex; min-height:240px; flex-direction:column; padding:24px; border:1px solid rgba(226,228,236,.9); border-radius:20px; background:rgba(255,255,255,.9); box-shadow:0 10px 30px rgba(42,35,92,.06); transition:.2s ease; }
+    .card:hover { transform:translateY(-3px); box-shadow:0 16px 40px rgba(42,35,92,.11); border-color:#d7d1ff; }
+    .card-top { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+    .tag { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--brand); font:600 12px ui-monospace,SFMono-Regular,Menlo,monospace; }
+    .time { flex:none; color:#9299a8; font-size:12px; }
+    .card h2 { margin:28px 0 10px; font-size:23px; }
+    .card p { margin:0 0 24px; color:var(--muted); line-height:1.75; }
+    .card a { display:flex; align-items:center; justify-content:space-between; margin-top:auto; padding-top:18px; border-top:1px solid var(--line); color:var(--brand); font-weight:700; text-decoration:none; }
+    .card a span { font-size:20px; transition:.2s; } .card:hover a span { transform:translateX(4px); }
+    .empty { grid-column:1/-1; padding:72px 24px; border:1px dashed #cfd3df; border-radius:20px; text-align:center; background:rgba(255,255,255,.64); }
+    .empty-icon { color:var(--brand2); font-size:42px; } .empty h2 { margin:12px 0 8px; } .empty p { margin:0; color:var(--muted); }
+    footer { padding:0 0 36px; color:#9299a8; font-size:12px; }
+    @media (max-width:600px) { header { padding-top:48px; } .meta { flex-direction:column; gap:6px; } .grid { grid-template-columns:1fr; } }
+  </style>
 </head>
 <body>
-<header><span class="eyebrow">DMRENTALS · PREVIEW</span><h1>雕马原型预览库</h1><p class="lead">集中保存产品原型与需求页面。每个页面拥有独立、稳定且可公开访问的链接。</p><div class="meta"><span>共 0 个原型</span><span>目录更新：2026-11-04 12:00</span></div></header>
-<main><section class="empty"><div class="empty-icon">◇</div><h2>暂时还没有原型</h2><p>调用发布 Skill 后，新页面会自动出现在这里。</p></section></main>
-<footer>Powered by GitHub Pages · dmrentals-preview</footer>
+  <header>
+    <span class="eyebrow">DMRENTALS · PREVIEW</span>
+    <h1>雕马原型预览库</h1>
+    <p class="lead">集中保存产品原型与需求页面。每个页面拥有独立、稳定且可公开访问的链接。</p>
+    <div class="meta"><span>共 1 个原型</span><span>目录更新：2026-11-04 13:42</span></div>
+  </header>
+  <main class="grid"><article class="card">
+  <div class="card-top"><span class="tag">activity-product-inventory</span><span class="time">更新于 2026-11-04 13:42</span></div>
+  <h2>活动商品库存列表</h2>
+  <p>集中查看活动商品下商家的报名库存、订单占用和派单资格，并支持商家维护库存。</p>
+  <a href="./previews/activity-product-inventory/" aria-label="打开活动商品库存列表">打开原型 <span>→</span></a>
+</article></main>
+  <footer>Powered by GitHub Pages · dmrentals-preview</footer>
 </body>
 </html>
