@@ -1,6 +1,6 @@
 {
   "repository": "jieqiqiu987-cmyk/dmrentals-preview",
-  "updatedAt": "2026-11-04T13:42:34+08:00",
+  "updatedAt": "2026-11-04T19:41:13+08:00",
   "sites": [
     {
       "slug": "activity-product-inventory",
@@ -8,7 +8,7 @@
       "summary": "集中查看活动商品下商家的报名库存、订单占用和派单资格，并支持商家维护库存。",
       "path": "previews/activity-product-inventory/",
       "createdAt": "2026-11-04T13:42:34+08:00",
-      "updatedAt": "2026-11-04T13:42:34+08:00"
+      "updatedAt": "2026-11-04T19:41:13+08:00"
     }
   ]
 }
