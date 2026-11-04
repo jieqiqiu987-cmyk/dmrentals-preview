@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>订单列表 · 派单数据导出交互原型 PRD</title>
+  <style>
+    :root{
+      --blue:#409eff;--blue-soft:#eaf4ff;--green:#59c85d;--ink:#253142;--muted:#7a8797;
+      --line:#dce4ee;--paper:#eef2f6;--white:#fff;--dark:#191919;--danger:#f56c6c;
+      --prototype-fr:68fr;--prd-fr:32fr;--shadow:0 12px 34px rgba(31,50,72,.09)
+    }
+    *{box-sizing:border-box}html,body{margin:0;min-height:100%;font:14px/1.55 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;color:var(--ink);background:var(--paper)}
+    button,input,select{font:inherit}button{cursor:pointer}.hidden{display:none!important}
+    .review-shell{min-height:100vh;background:radial-gradient(circle at 5% 5%,rgba(64,158,255,.07),transparent 28%),#f4f7f9}
+    .review-top{height:66px;display:flex;align-items:center;justify-content:space-between;padding:0 26px;position:sticky;top:0;z-index:50;background:rgba(255,255,255,.95);backdrop-filter:blur(14px);border-bottom:1px solid #e0e7ec}
+    .review-brand{display:flex;align-items:center;gap:12px}.review-mark{width:38px;height:38px;display:grid;place-items:center;border-radius:11px;background:#0f9f86;color:#fff;font-weight:800}.review-brand strong{display:block;font-size:16px}.review-brand small{display:block;color:#83908d;font-size:12px;letter-spacing:.08em}.review-state{display:flex;align-items:center;gap:9px;color:#697672;font-size:13px}.review-state i{width:8px;height:8px;border-radius:50%;background:#1cb889;box-shadow:0 0 0 5px rgba(28,184,137,.12)}
+    .review-workspace{display:grid;grid-template-columns:192px minmax(0,1fr);min-height:calc(100vh - 66px)}
+    .outer-rail{padding:20px 12px;border-right:1px solid #e2e9e6;background:rgba(255,255,255,.72)}.rail-label{padding:0 9px 10px;color:#83908d;font-size:12px;font-weight:700;letter-spacing:.08em}
+    .page-switch{display:grid;gap:8px}.role-btn{width:100%;display:grid;grid-template-columns:32px minmax(0,1fr);gap:9px;align-items:center;padding:11px 10px;border:1px solid transparent;border-radius:11px;text-align:left;color:#53635e;background:transparent}.role-btn:hover,.role-btn:focus-visible{border-color:#cfe4dd;background:#fff;outline:0}.role-btn.active{color:#087764;background:#fff;box-shadow:0 8px 28px rgba(30,72,61,.08)}.role-icon{width:31px;height:31px;display:grid;place-items:center;border-radius:9px;background:#dfe9e6;color:#60736d}.role-btn.active .role-icon{background:#0f9f86;color:#fff}.role-btn strong{display:block;font-size:13px}.role-btn small{display:block;margin-top:2px;color:#82908b;font-size:12px}
+    .rail-flow{margin-top:18px;padding:14px 12px;border-radius:13px;color:#d9eee8;background:#153c34}.rail-flow h2{margin:0 0 12px;color:#fff;font-size:13px}.step{display:grid;grid-template-columns:23px 1fr;gap:8px;align-items:center;padding:0 0 12px;font-size:12px}.step:last-child{padding-bottom:0}.step b{width:22px;height:22px;display:grid;place-items:center;border-radius:50%;color:#7be5c6;background:rgba(255,255,255,.12)}
+    .rail-note{margin-top:14px;padding:11px;border:1px solid #dce9e5;border-radius:10px;color:#64746e;background:rgba(255,255,255,.75);font-size:12px}.rail-note strong{color:#087764}.rail-note p{margin:5px 0 0}
+    .stage{min-width:0;padding:18px 16px 34px}.stage-head{display:flex;align-items:end;justify-content:space-between;gap:16px;margin-bottom:12px}.stage-head .eyebrow{color:#84918d;font-size:12px;font-weight:700;letter-spacing:.1em}.stage-head h1{margin:4px 0 0;font-size:22px}.stage-head p{margin:4px 0 0;color:#697672;font-size:13px}.stage-chip{padding:6px 10px;border:1px solid #d9e3df;border-radius:999px;background:#fff;color:#60706b;font-size:12px}
+    .prototype-layout{display:grid;grid-template-columns:minmax(0,var(--prototype-fr)) 14px minmax(300px,var(--prd-fr));gap:7px;align-items:stretch}.prototype-layout.prd-collapsed{grid-template-columns:minmax(0,1fr) 0 66px}.prototype-layout.prd-collapsed .resizer{display:none}.prototype-layout.prd-collapsed .prd-body,.prototype-layout.prd-collapsed .prd-head h2{display:none}.prototype-layout.prd-collapsed .prd-head{justify-content:center}.prototype-layout.prd-collapsed .prd-toggle{writing-mode:vertical-rl;min-height:108px}
+    .prototype-board{min-width:0;padding:22px 8px 8px;border:1px solid #d9e2df;border-radius:15px;background:rgba(255,255,255,.83);box-shadow:var(--shadow);overflow:hidden}.board-tag{position:absolute}.resizer{width:14px;border:0;border-radius:8px;background:transparent;position:relative;cursor:col-resize;touch-action:none}.resizer:before{content:"";position:absolute;left:5px;top:calc(50% - 24px);width:4px;height:48px;border-radius:3px;background:#c7d5d0}.resizer:hover:before,.resizer:focus-visible:before,.resizer.dragging:before{background:#0f9f86;transform:scaleX(1.25)}.resizer:focus-visible{outline:2px solid #9fd5c7}
+    .prd-panel{min-width:0;max-height:calc(100vh - 126px);overflow:auto;padding:15px;border:1px solid #dce5e1;border-radius:13px;background:rgba(255,255,255,.94);box-shadow:0 12px 32px rgba(28,55,48,.06)}.prd-head{position:sticky;top:-15px;z-index:2;display:flex;align-items:start;justify-content:space-between;gap:10px;margin:-15px -15px 13px;padding:15px;background:rgba(255,255,255,.97);border-bottom:1px solid #e8eeeb}.prd-head h2{margin:0;font-size:17px}.prd-toggle{border:1px solid #d7e2dd;border-radius:7px;background:#fff;color:#427064;padding:6px 9px;font-size:12px}.prd-section{margin-bottom:17px}.prd-section h3{margin:0 0 7px;color:#078875;font-size:14px}.prd-section h4{margin:9px 0 5px;font-size:13px}.prd-section p,.prd-section li{font-size:12px;color:#43534d}.prd-section p{margin:0}.prd-section ul,.prd-section ol{margin:0;padding-left:18px}.prd-section li+li{margin-top:4px}.rule-table{width:100%;border-collapse:collapse;font-size:12px}.rule-table th,.rule-table td{padding:8px 7px;border:1px solid #dfe7e3;text-align:left;vertical-align:top}.rule-table th{background:#edf5f2;color:#305a50;white-space:nowrap}.rule-table tbody tr:nth-child(even){background:#f7f9f8}.tag-confirmed,.tag-pending{display:inline-flex;padding:2px 6px;border-radius:999px;font-size:11px}.tag-confirmed{color:#087764;background:#e5f5ef}.tag-pending{color:#9a6b1e;background:#fff3d6}
+    /* Embedded admin */
+    .admin-app{border:1px solid #dce4e8;border-radius:8px;overflow:hidden;background:#eef2f6}.admin-top{height:62px;display:flex;align-items:center;color:#fff;background:#1a1a1a}.admin-brand{width:210px;display:flex;align-items:center;gap:10px;padding-left:16px}.admin-logo{width:36px;height:36px;display:grid;place-items:center;border-radius:8px;color:#24e755;border:1px solid rgba(36,231,85,.55);font-weight:800}.admin-brand b{font-size:17px}.admin-nav{height:100%;display:flex;align-items:center;gap:4px;color:#c9c9c9}.admin-nav span{height:100%;display:flex;align-items:center;padding:0 13px}.admin-nav .active{position:relative;color:#fff;background:#3d3d3f}.admin-nav .active:after{content:"";position:absolute;bottom:6px;left:50%;width:28px;height:3px;transform:translateX(-50%);border-radius:3px;background:var(--blue)}.admin-user{margin-left:auto;padding-right:16px;display:flex;align-items:center;gap:10px}.admin-avatar{width:34px;height:34px;display:grid;place-items:center;border-radius:50%;background:#070707;color:#24e755}
+    .admin-shell{display:grid;grid-template-columns:154px minmax(0,1fr);min-height:660px}.admin-side{background:#fff;border-right:1px solid #e2e8f0}.side-head{padding:14px 16px;font-weight:700}.admin-side a{display:block;padding:10px 15px 10px 27px;color:#374151;text-decoration:none;font-size:13px}.admin-side a.active{color:var(--blue);background:var(--blue-soft);border-right:3px solid var(--blue);font-weight:700}.side-group{padding:11px 15px;color:#2f3947;font-weight:700;border-top:1px solid #eef1f4}.admin-main{min-width:0;background:#eef2f6}.breadcrumb{height:48px;display:flex;align-items:center;gap:10px;padding:0 14px;background:#fff;color:#6c7683;box-shadow:0 2px 8px rgba(27,42,59,.07)}.breadcrumb b{color:#2a3442}
+    .page-body{padding:13px}.query-card{padding:13px;border:1px solid var(--line);border-radius:5px;background:#f5f7fa}.filter-grid{display:grid;grid-template-columns:repeat(3,minmax(190px,1fr));gap:11px 16px}.filter-field{display:grid;grid-template-columns:80px minmax(0,1fr);gap:8px;align-items:center}.filter-field label{text-align:right;color:#5f6875;font-weight:700;font-size:12px}.filter-field input,.filter-field select{width:100%;height:34px;border:1px solid #cfd9e5;border-radius:4px;padding:0 10px;background:#fff;color:#4b5563;outline:none}.filter-field input:focus,.filter-field select:focus{border-color:var(--blue);box-shadow:0 0 0 2px #dcecff}.extra-filters{display:contents}.filter-actions{grid-column:1/-1;display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-top:3px}.ui-btn{height:34px;padding:0 14px;border:1px solid #cfd8e4;border-radius:4px;background:#fff;color:#4b5563}.ui-btn:hover{border-color:#9ec7f6;color:#2f83dd}.ui-btn.primary{color:#fff;border-color:var(--green);background:var(--green)}.ui-btn.outline-green{color:#43b34a;border-color:#55c85c;background:#f4fff4}.ui-btn[disabled]{opacity:.65;cursor:not-allowed}.more-btn{min-width:82px}
+    .export-wrap{position:relative}.export-btn{display:flex;align-items:center;gap:7px}.caret{font-size:10px;transition:.18s}.export-wrap.open .caret{transform:rotate(180deg)}.export-menu{position:absolute;right:0;top:calc(100% + 7px);z-index:20;width:154px;padding:5px;border:1px solid #d8e1eb;border-radius:6px;background:#fff;box-shadow:0 12px 28px rgba(30,49,71,.16);opacity:0;visibility:hidden;transform:translateY(-4px);transition:.15s}.export-wrap:hover .export-menu,.export-wrap:focus-within .export-menu,.export-wrap.open .export-menu{opacity:1;visibility:visible;transform:none}.export-menu button{width:100%;padding:9px 10px;border:0;border-radius:4px;background:#fff;text-align:left;color:#344054;font-size:13px}.export-menu button:hover,.export-menu button:focus{outline:0;background:#ecf5ff;color:#247bd1}.export-menu small{display:block;margin-top:2px;color:#98a2b3;font-size:11px}
+    @keyframes exportSpin{to{transform:rotate(360deg)}}.export-spinner{width:14px;height:14px;border:2px solid #c8d2df;border-top-color:#409eff;border-radius:50%;animation:exportSpin .7s linear infinite}.export-wrap.exporting .export-menu{opacity:0!important;visibility:hidden!important;pointer-events:none!important;transform:translateY(-4px)!important;transition:none!important}.export-wrap.exporting .caret{display:none}.export-wrap.exporting .export-btn{cursor:wait}
+    .applied-note{display:none;margin-top:10px;padding:7px 10px;border:1px solid #d9ecff;border-radius:4px;color:#4b6b86;background:#ecf5ff;font-size:12px}.applied-note.show{display:block}
+    .status-tabs{display:flex;flex-wrap:wrap;gap:7px;margin:11px 0;padding:10px;border:1px solid var(--line);border-radius:5px;background:#fff}.status-tab{padding:8px 12px;border:1px solid #dce4ef;border-radius:5px;background:#fff;color:#5b6572}.status-tab.active{border-color:var(--blue);color:#fff;background:var(--blue)}.badge{display:inline-grid;place-items:center;min-width:20px;height:20px;margin-left:5px;padding:0 5px;border-radius:10px;color:#fff;background:#ff656b;font-size:11px}
+    .order-table{border:1px solid var(--line);border-radius:5px;background:#fff;overflow:hidden}.order-columns{display:grid;grid-template-columns:1.35fr .72fr 1fr .9fr .9fr .65fr;padding:10px 12px;background:#f4f7fb;color:#242a32;font-weight:700;font-size:12px}.order-card{border-top:1px solid #e5ebf2}.order-card:first-of-type{border-top:0}.order-meta{display:flex;align-items:center;gap:14px;padding:9px 12px;color:#616b78;background:#fafbfc;font-size:12px}.order-meta a{color:#3d8fe2;text-decoration:none}.order-meta .right{margin-left:auto}.order-row{display:grid;grid-template-columns:1.35fr .72fr 1fr .9fr .9fr .65fr;min-height:126px}.order-cell{padding:12px;border-right:1px solid #e6ebf1;color:#616873;font-size:12px}.order-cell:last-child{border-right:0}.product-view{display:flex;gap:10px}.thumb{width:54px;height:54px;flex:none;display:grid;place-items:center;border:1px solid #dce5ef;border-radius:5px;background:#fff}.thumb svg{width:42px;height:42px}.product-title{font-weight:700;color:#252d37}.product-tags{display:flex;gap:5px;margin-bottom:5px}.mini-tag{padding:2px 5px;border:1px solid #8cdb9a;border-radius:3px;color:#35ae4a;background:#f4fff5;font-size:10px}.product-line{margin-top:5px;color:#7d8794}.money-line{margin:5px 0}.money-line b{color:#313943}.status-cell{text-align:center;font-size:13px;font-weight:700}.status-cell span{display:block;margin-top:5px;color:#9aa3ad;font-size:11px;font-weight:400}.empty-state{padding:48px;text-align:center;color:#8a95a3}.pagination{display:flex;justify-content:flex-end;gap:6px;padding:10px;border-top:1px solid var(--line)}.pagination button{width:28px;height:28px;border:1px solid #d7e0eb;border-radius:4px;background:#fff;color:#606b79}.pagination button.active{color:#fff;border-color:var(--blue);background:var(--blue)}
+    .toast{position:fixed;left:50%;bottom:24px;z-index:100;max-width:min(520px,calc(100vw - 28px));padding:11px 16px;border-radius:7px;color:#fff;background:#263b36;box-shadow:0 13px 30px rgba(15,37,31,.24);opacity:0;pointer-events:none;transform:translate(-50%,14px);transition:.2s}.toast.show{opacity:1;transform:translate(-50%,0)}
+    .prd-thumb{width:38px;height:38px;display:grid;place-items:center;border:1px solid #dce5ef;border-radius:5px;background:#fff}.prd-thumb svg{width:30px;height:30px}
+    /* Simulated Excel */
+    .excel-app{min-height:690px;border:1px solid #cfd7d4;border-radius:8px;overflow:hidden;background:#f7f8f8}.excel-titlebar{height:42px;display:flex;align-items:center;justify-content:space-between;padding:0 14px;color:#fff;background:#217346}.excel-titlebar strong{font-size:14px}.excel-titlebar span{font-size:12px;opacity:.9}.excel-ribbon{display:flex;align-items:center;gap:18px;height:68px;padding:9px 14px;border-bottom:1px solid #d8dedb;background:#fff}.ribbon-group{display:grid;grid-template-columns:repeat(3,28px);gap:5px;padding-right:15px;border-right:1px solid #e1e5e3}.ribbon-group i{height:25px;display:grid;place-items:center;border-radius:3px;color:#52615b;background:#f1f4f2;font-style:normal;font-size:11px}.ribbon-label{color:#6b7772;font-size:11px}.formula-bar{height:34px;display:grid;grid-template-columns:78px 34px 1fr;align-items:center;border-bottom:1px solid #d2d8d5;background:#fff}.name-box,.fx-box,.formula-input{height:100%;display:flex;align-items:center;padding:0 9px;border-right:1px solid #d2d8d5;color:#52605a}.fx-box{justify-content:center;font-style:italic}.formula-input{border-right:0;color:#7b8580}.excel-scroll{overflow:auto;max-height:520px;background:#fff}.excel-grid{border-collapse:separate;border-spacing:0;min-width:4300px;font-size:11px}.excel-grid th,.excel-grid td{height:31px;padding:5px 8px;border-right:1px solid #d9dfdc;border-bottom:1px solid #d9dfdc;white-space:nowrap;text-align:left}.excel-grid thead tr:first-child th{position:sticky;top:0;z-index:3;height:25px;padding:2px 8px;text-align:center;color:#59645f;background:#eef1ef}.excel-grid thead tr:nth-child(2) th{position:sticky;top:25px;z-index:3;color:#fff;background:#1f4e78}.excel-grid .row-no{position:sticky;left:0;z-index:4;width:38px;min-width:38px;text-align:center;color:#66716c;background:#eef1ef!important}.excel-grid tbody tr:nth-child(even) td{background:#f5f8fc}.excel-grid td.mark-reject{color:#b91c1c!important;background:#fdecec!important;font-weight:700}.excel-grid td.mark-final{color:#166534!important;background:#e8f5e9!important;font-weight:700}.excel-grid .selected{outline:2px solid #217346;outline-offset:-2px}.sheet-bar{height:42px;display:flex;align-items:center;gap:12px;padding:0 12px;border-top:1px solid #d3dad6;background:#f4f6f5}.sheet-tab{padding:8px 16px 7px;border-bottom:3px solid #217346;color:#185c37;background:#fff;font-weight:700}.sheet-status{margin-left:auto;color:#7a8680;font-size:11px}.excel-caption{padding:10px 14px;color:#5c6a64;background:#eaf4ef;font-size:12px}.severity{display:inline-flex;min-width:42px;justify-content:center;padding:2px 6px;border-radius:999px;font-size:11px}.severity.warn{color:#8b5e08;background:#fff0c8}.severity.error{color:#a52a2a;background:#ffe5e5}.severity.info{color:#28608f;background:#e8f3ff}.handle-list{margin:0;padding-left:16px}.color-key{display:grid;grid-template-columns:16px 1fr;gap:7px;align-items:start}.color-key+.color-key{margin-top:6px}.swatch{width:16px;height:16px;border:1px solid rgba(0,0,0,.08);border-radius:3px}.swatch.blue{background:#1f4e78}.swatch.zebra{background:#f5f8fc}.swatch.reject{background:#fdecec}.swatch.final{background:#e8f5e9}
+    .excel-grid td.mark-transfer{color:#8a5800!important;background:#fff1cc!important;font-weight:700}.swatch.transfer{background:#fff1cc}
+    @media(max-width:1250px){.prototype-layout,.prototype-layout.prd-collapsed{grid-template-columns:minmax(0,1fr);row-gap:10px}.resizer{display:none}.prd-panel{max-height:none}.prototype-layout.prd-collapsed .prd-panel{min-height:52px}.prototype-layout.prd-collapsed .prd-head{justify-content:space-between}.prototype-layout.prd-collapsed .prd-head h2{display:block}.prototype-layout.prd-collapsed .prd-toggle{writing-mode:initial;min-height:0}.filter-grid{grid-template-columns:repeat(2,minmax(190px,1fr))}}
+    @media(max-width:760px){.review-top{height:58px;padding:0 12px}.review-brand small,.review-state{display:none}.review-workspace{display:block}.outer-rail{padding:9px 10px;border-right:0;border-bottom:1px solid #e2e9e6}.rail-label,.rail-flow,.rail-note{display:none}.page-switch{grid-template-columns:1fr 1fr}.role-btn{padding:8px}.stage{padding:12px 8px 24px}.stage-head{align-items:flex-start;flex-direction:column}.stage-chip{display:none}.prototype-board{padding:18px 4px 4px}.admin-top{height:54px}.admin-brand{width:auto;padding-left:9px}.admin-brand b{font-size:14px}.admin-nav,.admin-user span{display:none}.admin-user{padding-right:9px}.admin-shell{display:block;min-height:610px}.admin-side{display:none}.page-body{padding:8px}.filter-grid{grid-template-columns:1fr}.filter-actions{justify-content:flex-start;flex-wrap:wrap}.order-columns{display:none}.order-row{display:block}.order-cell{border-right:0;border-bottom:1px solid #edf1f5}.order-cell:before{display:block;margin-bottom:5px;color:#929dab;font-size:11px;font-weight:700}.order-cell:nth-child(1):before{content:"商品信息"}.order-cell:nth-child(2):before{content:"押金"}.order-cell:nth-child(3):before{content:"租金/到期"}.order-cell:nth-child(4):before{content:"收货信息"}.order-cell:nth-child(5):before{content:"租金实付款"}.order-cell:nth-child(6):before{content:"订单状态"}.order-meta{flex-wrap:wrap}.order-meta .right{width:100%;margin-left:0}.status-cell{text-align:left}.prd-panel{padding:12px}.rule-table{display:block;overflow-x:auto}.export-menu{left:0;right:auto}.excel-ribbon{gap:8px}.ribbon-group:nth-of-type(n+3){display:none}.excel-app{min-height:600px}}
+  </style>
+</head>
+<body>
+<div class="review-shell">
+  <header class="review-top">
+    <div class="review-brand"><span class="review-mark">单</span><div><strong>自动派单数据导出</strong><small>INTERACTIVE PROTOTYPE · PRD</small></div></div>
+    <div class="review-state"><i></i>可交互原型 <span>·</span> <span id="reviewPath">运营后台 / 订单列表</span></div>
+  </header>
+
+  <div class="review-workspace">
+    <aside class="outer-rail">
+      <div class="rail-label">系统与页面</div>
+      <div class="page-switch" role="navigation" aria-label="原型页面切换">
+        <button class="role-btn active" type="button" data-page="order" aria-current="page"><span class="role-icon">▦</span><span><strong>订单列表</strong><small>运营后台 / 导出入口</small></span></button>
+        <button class="role-btn" type="button" data-page="excel" aria-current="false"><span class="role-icon">X</span><span><strong>派单数据-Excel</strong><small>模拟文件 / 字段说明</small></span></button>
+      </div>
+      <section class="rail-flow">
+        <h2>派单数据导出流程</h2>
+        <div class="step"><b>1</b><span>运营设置筛选并查询</span></div>
+        <div class="step"><b>2</b><span>选择“导出数据”类型</span></div>
+        <div class="step"><b>3</b><span>识别三类派单订单</span></div>
+        <div class="step"><b>4</b><span>生成派单明细文件</span></div>
+      </section>
+      <div class="rail-note"><strong>导出口径</strong><p>导出已生效筛选条件下的全部结果，不限当前分页；派单明细一次派单一行。</p></div>
+    </aside>
+
+    <main class="stage">
+      <div class="stage-head">
+        <div><div class="eyebrow" id="stageEyebrow">ORDER EXPORT / 运营视图</div><h1 id="stageTitle">订单列表 · 导出数据</h1><p id="stageDesc">合并订单、风控、派单三个导出入口，并补充派单明细导出规则。</p></div>
+        <span class="stage-chip">页面交互 + PRD</span>
+      </div>
+
+      <div class="prototype-layout" id="prototypeLayout">
+        <section class="prototype-board" id="orderView" aria-label="订单列表交互原型">
+          <div class="admin-app">
+            <header class="admin-top">
+              <div class="admin-brand"><span class="admin-logo">马</span><b>运营后台管理系统</b></div>
+              <nav class="admin-nav"><span>运营</span><span class="active">商城</span><span>资产</span><span>CRM</span><span>分销</span><span>商学院</span><span>工单</span></nav>
+              <div class="admin-user"><span>♧ 529</span><span class="admin-avatar">马</span><span>admin⌄</span></div>
+            </header>
+            <div class="admin-shell">
+              <aside class="admin-side">
+                <div class="side-head">▣　订单管理</div>
+                <a class="active">订单列表</a><a>逾期订单列表</a><a>预授权到期列表</a><a>小红书订单列表</a><a>购买申请列表</a><a>转单池</a><a>用户开票列表</a><a>争议订单</a><a>订单分组管理</a><a>提前完结订单列表</a>
+                <div class="side-group">售后管理　⌄</div><div class="side-group">催收管理　⌄</div><div class="side-group">同城管理　⌄</div>
+              </aside>
+              <section class="admin-main">
+                <div class="breadcrumb">☰　订单管理　/　<b>订单列表</b></div>
+                <div class="page-body">
+                  <section class="query-card">
+                    <div class="filter-grid">
+                      <div class="filter-field"><label for="orderNo">订单编号</label><input id="orderNo" placeholder="请输入订单编号"></div>
+                      <div class="filter-field"><label for="phone">收货人手机号</label><input id="phone" placeholder="请输入收货人手机号"></div>
+                      <div class="filter-field"><label for="shopName">店铺名称</label><input id="shopName" placeholder="请输入店铺名称"></div>
+                      <div class="filter-field"><label for="productName">商品名称</label><input id="productName" placeholder="请输入商品名称"></div>
+                      <div class="filter-field"><label for="orderStatus">订单状态</label><select id="orderStatus"><option value="">请选择订单状态</option><option>已取消</option><option>租用中</option><option>交易完成</option></select></div>
+                      <div class="filter-field"><label for="createdAt">创建时间</label><input id="createdAt" value="2026-09-05 至 2026-11-04"></div>
+                      <div class="filter-field"><label for="platform">平台类型</label><select id="platform"><option value="">请选择平台类型</option><option>雕马快租支付宝</option><option>小红书</option></select></div>
+                      <div class="extra-filters hidden" id="extraFilters">
+                        <div class="filter-field"><label for="dispatchType">派单类型</label><select id="dispatchType"><option value="">全部派单类型</option><option>系统派单</option><option>自动派单</option><option>运营手动派单</option></select></div>
+                        <div class="filter-field"><label for="risk">风控等级</label><select id="risk"><option value="">全部风险等级</option><option>低风险</option><option>中风险</option></select></div>
+                      </div>
+                      <div class="filter-actions">
+                        <button class="ui-btn outline-green" type="button" id="groupBtn">订单分组管理</button>
+                        <button class="ui-btn primary" type="button" id="queryBtn">查询</button>
+                        <button class="ui-btn" type="button" id="resetBtn">重置</button>
+                        <div class="export-wrap" id="exportWrap">
+                          <button class="ui-btn export-btn" type="button" id="exportBtn" aria-haspopup="menu" aria-expanded="false" aria-busy="false"><span class="export-spinner hidden" id="exportSpinner" aria-hidden="true"></span><span id="exportBtnLabel">导出数据</span><span class="caret">▼</span></button>
+                          <div class="export-menu" role="menu" aria-label="选择导出数据类型">
+                            <button type="button" role="menuitem" data-export="订单数据"><b>订单数据</b></button>
+                            <button type="button" role="menuitem" data-export="风控数据"><b>风控数据</b></button>
+                            <button type="button" role="menuitem" data-export="派单数据"><b>派单数据</b></button>
+                          </div>
+                        </div>
+                        <button class="ui-btn more-btn" type="button" id="moreBtn" aria-expanded="false">更多筛选</button>
+                      </div>
+                    </div>
+                    <div class="applied-note" id="appliedNote">已按当前列表生效条件查询；导出将处理全部筛选结果，不限当前分页。</div>
+                  </section>
+
+                  <div class="status-tabs" id="statusTabs">
+                    <button class="status-tab active" data-status="全部">全部</button><button class="status-tab" data-status="已取消">已取消</button><button class="status-tab" data-status="待付款">待付款 <span class="badge">2</span></button><button class="status-tab" data-status="平台待审核">平台待审核 <span class="badge">5</span></button><button class="status-tab" data-status="商家待审核">商家待审核 <span class="badge">15</span></button><button class="status-tab" data-status="待发货">待发货 <span class="badge">7</span></button><button class="status-tab" data-status="租用中">租用中 <span class="badge">17</span></button><button class="status-tab" data-status="交易完成">交易完成</button>
+                  </div>
+
+                  <section class="order-table">
+                    <div class="order-columns"><span>商品信息</span><span>押金</span><span>租金/到期</span><span>收货信息</span><span>租金实付款</span><span>订单状态</span></div>
+                    <article class="order-card" data-order-status="已取消">
+                      <div class="order-meta"><span>订单信息：<a>O2611041941746144343</a></span><span>创建时间：2026-11-04 14:43:04</span><span>店铺：<a>107 iPhone旗舰1</a></span><span class="right"><a>备注</a>　<a>更多</a></span></div>
+                      <div class="order-row">
+                        <div class="order-cell"><div class="product-view"><span class="thumb" aria-label="商品图片：电脑1"><svg viewBox="0 0 64 64" role="img"><path d="M15 18h34l-3 31H18z" fill="#9b6a45"/><path d="M23 22c0-9 18-9 18 0" fill="none" stroke="#5d402e" stroke-width="3"/><path d="M22 29h20M20 37h24" stroke="#d7b48d" stroke-width="2"/></svg></span><div><div class="product-tags"><span class="mini-tag">全新</span></div><div class="product-title">电脑1</div><div class="product-line">套餐：1｜米白色｜1</div><div class="product-line">数量：1件　ID：6166</div></div></div></div>
+                        <div class="order-cell"><div class="money-line">商品押金：¥1.00</div><div class="money-line">评估金额：¥1.00</div><div class="money-line">减免金额：¥0.00</div></div>
+                        <div class="order-cell"><div class="money-line">商品租金：¥3.00</div><div class="money-line">月租金：账单未生成</div><div class="money-line">租期：2026.11.07–2027.11.06</div></div>
+                        <div class="order-cell">橘***<div class="product-line">135****6023</div><div class="product-line">广东省 广州市 黄埔区</div></div>
+                        <div class="order-cell"><div class="money-line">退款金额：<b>¥0.00</b></div><div class="money-line">已付金额：<b>¥0.00</b></div><div class="money-line">账单金额：¥0.00</div></div>
+                        <div class="order-cell status-cell">已取消<span>自动代扣已关闭</span></div>
+                      </div>
+                    </article>
+                    <article class="order-card" data-order-status="租用中">
+                      <div class="order-meta"><span>订单信息：<a>O26101216374121155215</a></span><span>创建时间：2026-10-12 16:08:00</span><span>店铺：<a>惠印文印</a></span><span class="right"><a>备注</a>　<a>更多</a></span></div>
+                      <div class="order-row">
+                        <div class="order-cell"><div class="product-view"><span class="thumb" aria-label="商品图片：华为P40"><svg viewBox="0 0 64 64" role="img"><rect x="18" y="7" width="28" height="50" rx="6" fill="#374151"/><rect x="22" y="13" width="20" height="34" rx="2" fill="#9ec9e8"/><circle cx="32" cy="52" r="2" fill="#dbeafe"/></svg></span><div><div class="product-tags"><span class="mini-tag">工作机</span></div><div class="product-title">华为P40 5G企业租</div><div class="product-line">8+128G｜固定租期｜随机颜色</div><div class="product-line">数量：10件　ID：8184</div></div></div></div>
+                        <div class="order-cell"><div class="money-line">订单押金：¥0.00</div><div class="money-line">芝麻冻结：¥0.00</div></div>
+                        <div class="order-cell"><div class="money-line">总租金：¥6,000.00</div><div class="money-line">月租金/台：¥50.00</div><div class="money-line">租期：12期</div></div>
+                        <div class="order-cell">何*<div class="product-line">138****1026</div><div class="product-line">安徽省 芜湖市</div></div>
+                        <div class="order-cell"><div class="money-line">实际账单租金：<b>¥6,000.00</b></div><div class="money-line">推广渠道：推广订单</div></div>
+                        <div class="order-cell status-cell">租用中<span>已产生4次派单记录</span></div>
+                      </div>
+                    </article>
+                    <div class="empty-state hidden" id="emptyState">当前状态下暂无订单</div>
+                    <div class="pagination"><button>‹</button><button class="active">1</button><button>2</button><button>›</button></div>
+                  </section>
+                </div>
+              </section>
+            </div>
+          </div>
+        </section>
+
+        <section class="prototype-board hidden" id="excelView" aria-label="派单数据Excel模拟文件">
+          <div class="excel-app">
+            <div class="excel-titlebar"><strong>20261104153025_派单数据.xlsx</strong><span>Excel 模拟预览</span></div>
+            <div class="excel-ribbon" aria-hidden="true">
+              <div><div class="ribbon-group"><i>粘贴</i><i>剪切</i><i>复制</i></div><div class="ribbon-label">剪贴板</div></div>
+              <div><div class="ribbon-group"><i>B</i><i>I</i><i>U</i></div><div class="ribbon-label">字体</div></div>
+              <div><div class="ribbon-group"><i>左</i><i>中</i><i>右</i></div><div class="ribbon-label">对齐方式</div></div>
+              <div><div class="ribbon-group"><i>筛选</i><i>排序</i><i>冻结</i></div><div class="ribbon-label">数据</div></div>
+            </div>
+            <div class="formula-bar"><span class="name-box">AH2</span><span class="fx-box">fx</span><span class="formula-input">拒单</span></div>
+            <div class="excel-caption">派单明细：一次派单一行；同一订单的订单、商品、价格信息逐行重复，不合并单元格。横向滚动可查看全部 39 个字段。</div>
+            <div class="excel-scroll" tabindex="0" aria-label="可横向滚动查看全部字段">
+              <table class="excel-grid">
+                <thead>
+                  <tr><th class="row-no"></th><th colspan="7">A–G 订单信息</th><th colspan="5">H–L 归属信息</th><th colspan="8">M–T 商品信息</th><th colspan="6">U–Z 价格信息</th><th colspan="13">AA–AM 派单信息</th></tr>
+                  <tr><th class="row-no">1</th><th>订单号</th><th>订单状态</th><th>下单时间</th><th>订单类型</th><th>风控等级</th><th>订单取消原因</th><th>订单备注</th><th>推广渠道</th><th>推广人姓名</th><th>推广人所属部门</th><th>下单店铺ID</th><th>下单店铺</th><th>商品ID</th><th>商品名称</th><th>一级类目</th><th>二级类目</th><th>三级类目</th><th>规格</th><th>商品数量</th><th>租期</th><th>账单月租金/台</th><th>最低价</th><th>成交价</th><th>成交价是否低于最低价</th><th>订单原始总租金（券前）</th><th>实际账单租金</th><th>派单轮次</th><th>派单时间</th><th>派单类型</th><th>派单规则/操作人</th><th>派单店铺ID</th><th>派单店铺</th><th>商家来源</th><th>派单结果</th><th>派单处理类型</th><th>拒单原因</th><th>处理时间</th><th>处理时长（分钟）</th><th>最终接单状态</th></tr>
+                </thead>
+                <tbody>
+                  <tr><th class="row-no">2</th><td>O26101016374121756466</td><td>已取消</td><td>2026/10/12 16:08</td><td>个人订单</td><td>低风险</td><td>【运营取消】联系不上顾客</td><td>按销售创建订单时备注原因</td><td>本管家非自营</td><td></td><td></td><td>234</td><td>商家精选</td><td>8302</td><td>华为nova6 5G全网通工作室专用</td><td>手机</td><td>智能手机</td><td>单屏</td><td>8+128G</td><td>37</td><td>12期</td><td>40.00</td><td>35.00</td><td>40.00</td><td>否</td><td>22200.00</td><td>0.00</td><td>1</td><td>2026/10/12 16:08</td><td>系统派单</td><td>系统在途派单规则</td><td>132</td><td>千千数码</td><td>平台商家</td><td class="mark-reject selected">拒单</td><td>商家手动拒单</td><td>联系不上顾客</td><td>2026/10/12 19:37</td><td>209</td><td>未接单</td></tr>
+                  <tr><th class="row-no">3</th><td>O26101016374121756466</td><td>已取消</td><td>2026/10/12 16:08</td><td>个人订单</td><td>低风险</td><td>【运营取消】联系不上顾客</td><td>按销售创建订单时备注原因</td><td>本管家非自营</td><td></td><td></td><td>234</td><td>商家精选</td><td>8302</td><td>华为nova6 5G全网通工作室专用</td><td>手机</td><td>智能手机</td><td>单屏</td><td>8+128G</td><td>37</td><td>12期</td><td>40.00</td><td>35.00</td><td>40.00</td><td>否</td><td>22200.00</td><td>0.00</td><td>2</td><td>2026/10/13 13:34</td><td>自动派单</td><td>工作机商品自动派单规则</td><td>201</td><td>五岳租赁</td><td>活动商家</td><td class="mark-reject">拒单</td><td>商家手动拒单</td><td>联系不上</td><td>2026/10/13 14:32</td><td>58</td><td>未接单</td></tr>
+                  <tr><th class="row-no">4</th><td>O26101016374121756466</td><td>已取消</td><td>2026/10/12 16:08</td><td>个人订单</td><td>低风险</td><td>【运营取消】联系不上顾客</td><td>按销售创建订单时备注原因</td><td>本管家非自营</td><td></td><td></td><td>234</td><td>商家精选</td><td>8302</td><td>华为nova6 5G全网通工作室专用</td><td>手机</td><td>智能手机</td><td>单屏</td><td>8+128G</td><td>37</td><td>12期</td><td>40.00</td><td>35.00</td><td>40.00</td><td>否</td><td>22200.00</td><td>0.00</td><td>3</td><td>2026/10/13 14:36</td><td>运营手动派单</td><td>admin</td><td>305</td><td>柏硕电子租赁</td><td>平台商家</td><td class="mark-reject">拒单</td><td>系统超时拒单</td><td>超时取消</td><td>2026/10/13 14:43</td><td>7</td><td>未接单</td></tr>
+                  <tr><th class="row-no">5</th><td>O26101216374121155215</td><td>租用中</td><td>2026/10/12 16:08</td><td>个人订单</td><td>中风险</td><td></td><td>按销售创建订单时备注原因</td><td>推广订单</td><td>何翠</td><td>芜湖一组</td><td>321</td><td>惠印文印</td><td>8184</td><td>华为P40 5G企业租自媒体-工作机</td><td>手机</td><td>智能手机</td><td>单屏</td><td>8+128G</td><td>10</td><td>12期</td><td>50.00</td><td>35.00</td><td>40.00</td><td>否</td><td>6000.00</td><td>6000.00</td><td>1</td><td>2026/10/14 10:03</td><td>自动派单</td><td>P40工作机自动派单规则</td><td>305</td><td>柏硕电子租赁</td><td>平台商家</td><td>接单</td><td>运营取消订单</td><td></td><td>2026/10/14 11:30</td><td>87</td><td class="mark-transfer">接单后转派</td></tr>
+                  <tr><th class="row-no">6</th><td>O26101216374121155215</td><td>租用中</td><td>2026/10/12 16:08</td><td>个人订单</td><td>中风险</td><td></td><td>按销售创建订单时备注原因</td><td>推广订单</td><td>何翠</td><td>芜湖一组</td><td>321</td><td>惠印文印</td><td>8184</td><td>华为P40 5G企业租自媒体-工作机</td><td>手机</td><td>智能手机</td><td>单屏</td><td>8+128G</td><td>10</td><td>12期</td><td>50.00</td><td>35.00</td><td>40.00</td><td>否</td><td>6000.00</td><td>6000.00</td><td>2</td><td>2026/10/14 12:10</td><td>运营手动派单</td><td>admin</td><td>305</td><td>柏硕电子租赁</td><td>平台商家</td><td>接单</td><td>商家手动接单</td><td></td><td>2026/10/14 12:25</td><td>15</td><td class="mark-final">最终接单</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="sheet-bar"><span>＋</span><span class="sheet-tab">派单明细</span><span class="sheet-status">就绪　5 条派单记录</span></div>
+          </div>
+        </section>
+
+        <button class="resizer" id="resizer" type="button" aria-label="调整原型与PRD宽度，方向键调整，双击恢复" aria-valuemin="46" aria-valuemax="78" aria-valuenow="68"></button>
+
+        <aside class="prd-panel" id="prdPanel">
+          <div class="prd-head"><h2 id="prdTitle">订单列表 · 导出数据 PRD</h2><button class="prd-toggle" id="prdToggle" type="button" aria-expanded="true">收起说明</button></div>
+          <div class="prd-body" id="orderPrd">
+            <section class="prd-section"><h3>1. 目标与范围</h3><p>减少页面导出按钮数量，并新增运营派单数据导出。仅调整订单列表导出入口、数据范围和异常反馈；订单数据、风控数据继续沿用现有逻辑。文件字段及格式见左侧“派单数据-Excel”。</p></section>
+
+            <section class="prd-section"><h3>2. 导出入口调整</h3>
+              <table class="rule-table"><thead><tr><th>控件</th><th>点击结果</th></tr></thead><tbody>
+                <tr><td>导出数据</td><td>替换原“导出”和“导出风控数据”两个按钮；Hover、键盘聚焦或点击后显示三个选项。选择任一类型后立即隐藏下拉菜单，按钮显示旋转 loading 和“导出中”，生成结束后恢复“导出数据”。</td></tr><tr><td>订单数据</td><td>调用系统已有订单导出逻辑。</td></tr><tr><td>风控数据</td><td>调用系统已有风控数据导出逻辑。</td></tr><tr><td>派单数据</td><td>按当前已经生效的运营订单列表筛选条件处理全部结果，不限当前分页。</td></tr>
+              </tbody></table>
+            </section>
+
+            <section class="prd-section"><h3>3. 派单数据导出规则</h3>
+              <h4>3.1 先确定订单范围</h4>
+              <ol><li>以运营当前订单列表为数据范围，读取已经点击“查询”后生效的筛选条件和状态页签。</li><li>处理筛选结果中的全部订单，不限当前分页；不在当前列表筛选结果内的订单不导出。</li><li>在上述订单范围内，再判断订单是否属于以下三类派单订单。命中任意一类即可进入导出范围。</li></ol>
+              <h4>3.2 三类派单订单</h4>
+              <table class="rule-table"><thead><tr><th>派单类型</th><th>触发及识别规则</th></tr></thead><tbody>
+                <tr><td>系统在途派单规则</td><td>新订单创建后，系统查询该客户名下状态为“租用中”的有效订单，并按商品品类匹配对应履约商家，支持匹配至三级品类。匹配后校验商家库存、服务范围及账户状态；校验通过则直接派给该商家，不进入公共派单池。导出实际通过该规则产生派单记录的订单。</td></tr>
+                <tr><td>商品自动派单规则</td><td>商品已配置派单规则时，用户下单该商品后，系统自动拒绝原商品发布商家的商家单，再按照该商品配置进入派单流程。导出该类订单及系统自动拒单、后续自动派单等完整记录。</td></tr>
+                <tr><td>转单池运营手动派单</td><td>订单进入转单池后，由运营选择接单商家并手动发起派单。导出实际产生运营手动派单记录的订单及其完整派单记录。</td></tr>
+              </tbody></table>
+              <h4>3.3 导出记录范围</h4>
+              <ol><li>判断依据为订单历史上的真实派单执行记录，不使用当前规则配置反推历史订单。</li><li>同一订单命中多种派单类型时只纳入一次订单范围，但导出完整派单链路，包括系统自动拒单、拒单、超时、自动转派及运营手动派单。</li><li>数据提取完成后，按左侧“派单数据-Excel”页面规定的字段、排序和格式生成文件。</li></ol>
+            </section>
+
+            <section class="prd-section"><h3>4. 导出状态与提示文案</h3>
+              <table class="rule-table"><thead><tr><th>场景</th><th>提示文案</th><th>处理方式</th></tr></thead><tbody>
+                <tr><td>提交成功</td><td>派单数据正在生成，请稍候。</td><td>按钮进入加载态并阻止重复提交；生成完成后自动下载，或进入现有下载任务。</td></tr>
+                <tr><td>无符合数据</td><td>当前筛选条件下暂无可导出的派单数据。</td><td>不创建空文件；保留筛选条件，运营可调整条件后重试。</td></tr>
+                <tr><td>导出数量超限</td><td>导出数据量较大，请缩小筛选范围后重试。</td><td>由开发评估并提供单次导出可稳定支持的极限数据量，产品确认后将其配置为单次导出上限；超过上限时不提交任务，并建议运营缩短创建时间或增加订单状态等筛选。</td></tr>
+                <tr><td>重复提交</td><td>派单数据正在生成，请勿重复操作。</td><td>复用当前任务，不新建重复任务。</td></tr>
+                <tr><td>任务创建失败</td><td>导出任务创建失败，请稍后重试。</td><td>恢复按钮可点击状态；保留已生效筛选条件并允许重新提交。</td></tr>
+                <tr><td>文件生成失败</td><td>派单数据生成失败，请重新导出。</td><td>任务标记失败；记录任务ID、失败阶段和错误日志，运营重新导出。</td></tr>
+                <tr><td>网络异常</td><td>网络异常，导出请求未完成，请检查网络后重试。</td><td>未收到成功回执前不提示成功；恢复按钮并允许重试。</td></tr>
+                <tr><td>部分数据异常</td><td>派单数据生成失败，请重新导出；如仍失败请联系技术人员。</td><td>不输出不完整文件；日志记录异常订单号、派单轮次及失败阶段，供技术排查。</td></tr>
+              </tbody></table>
+            </section>
+
+            <section class="prd-section"><h3>5. 失败处理原则</h3><ul><li>服务端以任务ID保证幂等，避免重复点击生成多份相同文件。</li><li>生成失败时保留原筛选条件，不要求运营重新填写。</li><li>任何行生成异常时整份文件失败，不静默跳过异常订单。</li><li>前端只展示可执行的处理建议；错误详情、异常订单号和堆栈仅写入服务端日志。</li><li>订单数据、风控数据沿用各自已有异常处理，本次新增规则仅约束派单数据导出。</li></ul></section>
+
+          </div>
+          <div class="prd-body hidden" id="excelPrd">
+            <section class="prd-section"><h3>1. 文件目标</h3><p>输出运营可直接筛选和追溯的派单明细。文件只包含“派单明细”一个Sheet，不增加派单分析页。文件名为 <code>yyyyMMddHHmmss_派单数据.xlsx</code>。</p></section>
+
+            <section class="prd-section"><h3>2. 行粒度与排序</h3><ul><li>一条派单记录对应一行，不按订单合并单元格。</li><li>同一订单的订单、归属、商品和价格字段在每条派单行中重复填写，便于筛选、透视和逐行分析。</li><li>先按下单时间升序，再按订单号、派单时间升序；同一订单的派单轮次从1连续编号。</li><li>无数据的字段留空，不输出“——”“无”等占位文本。</li><li>ID字段按文本格式输出，避免科学计数法或前导位丢失；金额保留两位小数，时间精确到分钟。</li></ul></section>
+
+            <section class="prd-section"><h3>3. 字段顺序与口径</h3>
+              <table class="rule-table"><thead><tr><th>分组</th><th>字段</th><th>定义</th></tr></thead><tbody>
+                <tr><td rowspan="7">订单<br>A–G</td><td>订单号</td><td>订单唯一编号；每条派单行重复。</td></tr><tr><td>订单状态</td><td>获取平台订单实际状态。</td></tr><tr><td>下单时间</td><td>订单创建成功时间。</td></tr><tr><td>订单类型</td><td>个人订单、企业订单。</td></tr><tr><td>风控等级</td><td>订单审核后的风险等级。</td></tr><tr><td>订单取消原因</td><td>仅订单状态为“已取消”时展示；格式为“【取消类型】取消备注内容”，例如“【运营取消】联系不上顾客”。</td></tr><tr><td>订单备注</td><td>本次新增导出字段，获取订单备注内容。</td></tr>
+                <tr><td rowspan="5">归属<br>H–L</td><td>推广渠道</td><td>订单推广来源。</td></tr><tr><td>推广人姓名</td><td>无归属时留空。</td></tr><tr><td>推广人所属部门</td><td>无归属时留空。</td></tr><tr><td>下单店铺ID</td><td>订单归属店铺ID，按文本输出。</td></tr><tr><td>下单店铺</td><td>订单归属店铺名称，不等同于派单店铺。</td></tr>
+                <tr><td rowspan="8">商品<br>M–T</td><td>商品ID</td><td>订单商品标识，按文本输出。</td></tr><tr><td>商品名称</td><td>下单时商品名称快照。</td></tr><tr><td>一级类目</td><td>下单时一级类目快照。</td></tr><tr><td>二级类目</td><td>下单时二级类目快照。</td></tr><tr><td>三级类目</td><td>下单时三级类目快照。</td></tr><tr><td>规格</td><td>商品规格名称。</td></tr><tr><td>商品数量</td><td>订单商品数量。</td></tr><tr><td>租期</td><td>租赁期数，如12期。</td></tr>
+                <tr><td rowspan="6">价格<br>U–Z</td><td>账单月租金/台</td><td>每台每期账单租金。</td></tr><tr><td>最低价</td><td>下单时最低可成交价快照。</td></tr><tr><td>成交价</td><td>订单实际每台每期成交租金。</td></tr><tr><td>成交价是否低于最低价</td><td>比较最低价与成交价：成交价低于最低价时显示“是”，否则显示“否”。</td></tr><tr><td>订单原始总租金（券前）</td><td>优惠前订单总租金。</td></tr><tr><td>实际账单租金</td><td>优惠、调整后进入账单口径的租金。</td></tr>
+                <tr><td rowspan="13">派单<br>AA–AM</td><td>派单轮次</td><td>同一订单按派单时间生成的连续序号。</td></tr><tr><td>派单时间</td><td>本次派单实际发送给商家的时间。</td></tr><tr><td>派单类型</td><td>系统派单、自动派单、运营手动派单。</td></tr><tr><td>派单规则/操作人</td><td>系统在途派单显示系统规则名称；商品自动派单显示已配置的规则名称；运营手动派单显示处理人员。</td></tr><tr><td>派单店铺ID</td><td>接收本次派单的店铺ID。</td></tr><tr><td>派单店铺</td><td>接收本次派单的店铺名称。</td></tr><tr><td>商家来源</td><td>显示“平台商家”或“活动商家”；仅商品自动派单可能出现活动商家，来源于自动派单规则配置。</td></tr><tr><td>派单结果</td><td>接单、拒单、待处理。</td></tr><tr><td>派单处理类型</td><td>商家手动接单/拒单、系统超时拒单、运营取消订单等；运营直接取消订单时，本次派单结束。</td></tr><tr><td>拒单原因</td><td>派单结果为“拒单”时，显示商家或系统记录的原始原因。</td></tr><tr><td>处理时间</td><td>商家接单、拒单，系统超时处理或运营取消订单的时间。</td></tr><tr><td>处理时长（分钟）</td><td>处理时间减去系统将本次派单发送给该商家的时间，单位为分钟。</td></tr><tr><td>最终接单状态</td><td>“最终接单”：该次接单为订单当前最终有效接单；“接单后转派”：商家已接单，但运营取消后将订单投入转单池重新派单；“未接单”：该次派单已拒单，未形成有效接单；“待处理”：本次派单尚未产生处理结果。同一商家再次收到派单时按新的派单轮次单独判断。</td></tr>
+              </tbody></table>
+            </section>
+
+            <section class="prd-section"><h3>4. 重点颜色标记</h3>
+              <div class="color-key"><span class="swatch blue"></span><p><strong>深蓝色表头：</strong>固定字段名称区，冻结首行后横向滚动仍保持可见。</p></div>
+              <div class="color-key"><span class="swatch zebra"></span><p><strong>浅蓝灰隔行底色：</strong>用于区分相邻派单记录，提高长表阅读性；不代表业务状态。</p></div>
+              <div class="color-key"><span class="swatch reject"></span><p><strong>浅红底＋深红粗体：</strong>“派单结果”包含“拒单”时标记，仅高亮该结果单元格，便于运营快速定位失败记录。</p></div>
+              <div class="color-key"><span class="swatch transfer"></span><p><strong>浅黄底＋深黄粗体：</strong>“最终接单状态”为“接单后转派”时标记，提示该商家曾接单但该次接单已被运营取消并重新派单。</p></div>
+              <div class="color-key"><span class="swatch final"></span><p><strong>浅绿底＋深绿粗体：</strong>“最终接单状态”为“最终接单”时标记，便于定位订单当前最终有效接单记录。</p></div>
+              <p style="margin-top:8px">颜色仅辅助阅读，导出值仍为原始文本；不改变筛选与统计口径。红色、黄色与绿色条件格式应覆盖全部数据行，新增行自动继承。</p>
+            </section>
+
+            <section class="prd-section"><h3>5. Excel格式</h3><table class="rule-table"><thead><tr><th>项目</th><th>要求</th></tr></thead><tbody><tr><td>Sheet</td><td>仅“派单明细”一个Sheet。</td></tr><tr><td>冻结</td><td>冻结首行；横向查看时字段表头保持可见。</td></tr><tr><td>筛选</td><td>首行开启自动筛选，39个字段均可筛选。</td></tr><tr><td>列宽</td><td>订单号、商品名称、规格、派单规则/操作人、拒单原因适当加宽；其他列按内容可读设置。</td></tr><tr><td>文本字段</td><td>订单号、商品ID、下单店铺ID、派单店铺ID按文本保存。</td></tr><tr><td>金额</td><td>金额字段保留两位小数，不加货币符号。</td></tr></tbody></table></section>
+
+            <section class="prd-section"><h3>6. 验收重点</h3><ul><li>字段顺序严格为A至AM共39列。</li><li>同一订单多次派单时，订单信息重复且所有单元格均不合并。</li><li>拒单、接单后转派与最终接单的颜色、文字条件和应用范围正确。</li><li>同一商家被重新派单时，每次派单独立成行并分别判断最终接单状态。</li><li>只输出派单明细Sheet，不输出派单分析Sheet。</li></ul></section>
+          </div>
+        </aside>
+      </div>
+    </main>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+  const $=selector=>document.querySelector(selector);
+  const $$=selector=>[...document.querySelectorAll(selector)];
+  const toast=$('#toast');let toastTimer;
+  function showToast(message){toast.textContent=message;toast.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.classList.remove('show'),2800)}
+
+  const pageConfig={
+    order:{eyebrow:'ORDER EXPORT / 运营视图',title:'订单列表 · 导出数据',desc:'合并订单、风控、派单三个导出入口，并补充派单明细导出规则。',prd:'订单列表 · 导出数据 PRD',path:'运营后台 / 订单列表'},
+    excel:{eyebrow:'DISPATCH DATA / 文件视图',title:'派单数据 · Excel 模拟文件',desc:'模拟导出后的派单明细文件，横向查看39个字段、重点颜色和重复订单行。',prd:'派单数据-Excel · PRD',path:'运营后台 / 派单数据-Excel'}
+  };
+  function switchPage(page){
+    const config=pageConfig[page];if(!config)return;
+    $$('[data-page]').forEach(button=>{const active=button.dataset.page===page;button.classList.toggle('active',active);button.setAttribute('aria-current',active?'page':'false')});
+    $('#orderView').classList.toggle('hidden',page!=='order');$('#excelView').classList.toggle('hidden',page!=='excel');
+    $('#orderPrd').classList.toggle('hidden',page!=='order');$('#excelPrd').classList.toggle('hidden',page!=='excel');
+    $('#stageEyebrow').textContent=config.eyebrow;$('#stageTitle').textContent=config.title;$('#stageDesc').textContent=config.desc;$('#prdTitle').textContent=config.prd;$('#reviewPath').textContent=config.path;
+    $('#prdPanel').scrollTop=0;
+  }
+  $$('[data-page]').forEach(button=>button.addEventListener('click',()=>switchPage(button.dataset.page)));
+
+  const exportWrap=$('#exportWrap'),exportBtn=$('#exportBtn'),exportBtnLabel=$('#exportBtnLabel'),exportSpinner=$('#exportSpinner');
+  exportBtn.addEventListener('click',()=>{const open=exportWrap.classList.toggle('open');exportBtn.setAttribute('aria-expanded',String(open))});
+  document.addEventListener('click',event=>{if(!exportWrap.contains(event.target)){exportWrap.classList.remove('open');exportBtn.setAttribute('aria-expanded','false')}});
+  $$('[data-export]').forEach(button=>button.addEventListener('click',()=>{
+    const type=button.dataset.export;exportWrap.classList.remove('open');exportBtn.setAttribute('aria-expanded','false');
+    exportWrap.classList.add('exporting');exportBtn.disabled=true;exportBtn.setAttribute('aria-busy','true');exportBtnLabel.textContent='导出中';exportSpinner.classList.remove('hidden');
+    showToast(type==='派单数据'?'派单数据正在生成，请稍候':'正在调用现有导出逻辑');
+    setTimeout(()=>{if(document.activeElement instanceof HTMLElement)document.activeElement.blur();exportWrap.classList.remove('exporting');exportBtn.disabled=false;exportBtn.setAttribute('aria-busy','false');exportBtnLabel.textContent='导出数据';exportSpinner.classList.add('hidden');const file=type==='派单数据'?'20261104153025_派单数据.xlsx':type==='风控数据'?'风控数据.xlsx':'订单数据.xlsx';showToast(`已生成：${file}`)},1200);
+  }));
+
+  $('#moreBtn').addEventListener('click',event=>{const expanded=event.currentTarget.getAttribute('aria-expanded')==='true';event.currentTarget.setAttribute('aria-expanded',String(!expanded));event.currentTarget.textContent=expanded?'更多筛选':'收起筛选';$('#extraFilters').classList.toggle('hidden',expanded)});
+  $('#queryBtn').addEventListener('click',()=>{$('#appliedNote').classList.add('show');const status=$('#orderStatus').value;if(status){$$('.status-tab').forEach(x=>x.classList.toggle('active',x.dataset.status===status));filterOrders(status)}showToast('已应用当前筛选条件')});
+  $('#resetBtn').addEventListener('click',()=>{$$('.query-card input').forEach(input=>{if(input.id==='createdAt')input.value='2026-09-05 至 2026-11-04';else input.value=''});$$('.query-card select').forEach(select=>select.value='');$('#appliedNote').classList.remove('show');$$('.status-tab').forEach(x=>x.classList.toggle('active',x.dataset.status==='全部'));filterOrders('全部');showToast('筛选条件已重置')});
+  $('#groupBtn').addEventListener('click',()=>showToast('进入订单分组管理（原有功能）'));
+  function filterOrders(status){let visible=0;$$('.order-card').forEach(card=>{const show=status==='全部'||card.dataset.orderStatus===status;card.classList.toggle('hidden',!show);if(show)visible++});$('#emptyState').classList.toggle('hidden',visible>0)}
+  $$('#statusTabs .status-tab').forEach(tab=>tab.addEventListener('click',()=>{$$('#statusTabs .status-tab').forEach(x=>x.classList.remove('active'));tab.classList.add('active');filterOrders(tab.dataset.status)}));
+  $$('.pagination button').forEach(button=>button.addEventListener('click',()=>showToast('已切换订单分页；导出仍处理全部筛选结果')));
+  $$('.order-meta a').forEach(link=>link.addEventListener('click',event=>{event.preventDefault();showToast(`查看：${link.textContent}`)}));
+
+  const layout=$('#prototypeLayout'),toggle=$('#prdToggle'),resizer=$('#resizer'),storageKey='dispatchExportPrdRatio',defaultRatio=68;
+  toggle.addEventListener('click',()=>{const collapsed=layout.classList.toggle('prd-collapsed');toggle.textContent=collapsed?'展开说明':'收起说明';toggle.setAttribute('aria-expanded',String(!collapsed))});
+  function setRatio(value,save=true){const ratio=Math.max(46,Math.min(78,Math.round(value)));layout.style.setProperty('--prototype-fr',ratio+'fr');layout.style.setProperty('--prd-fr',(100-ratio)+'fr');resizer.setAttribute('aria-valuenow',String(ratio));if(save)try{localStorage.setItem(storageKey,String(ratio))}catch(_){}return ratio}
+  try{const saved=Number(localStorage.getItem(storageKey));setRatio(saved>=46&&saved<=78?saved:defaultRatio,false)}catch(_){setRatio(defaultRatio,false)}
+  let dragging=false;
+  function moveDivider(clientX,save=false){const rect=layout.getBoundingClientRect(),ratio=100*(clientX-rect.left)/rect.width;setRatio(ratio,save)}
+  resizer.addEventListener('pointerdown',event=>{if(matchMedia('(max-width:1250px)').matches)return;dragging=true;resizer.classList.add('dragging');resizer.setPointerCapture(event.pointerId);moveDivider(event.clientX);event.preventDefault()});
+  resizer.addEventListener('pointermove',event=>{if(dragging)moveDivider(event.clientX)});
+  function stopDrag(){if(!dragging)return;dragging=false;resizer.classList.remove('dragging');try{localStorage.setItem(storageKey,resizer.getAttribute('aria-valuenow'))}catch(_){}}
+  resizer.addEventListener('pointerup',stopDrag);resizer.addEventListener('pointercancel',stopDrag);resizer.addEventListener('dblclick',()=>setRatio(defaultRatio));
+  resizer.addEventListener('keydown',event=>{const current=Number(resizer.getAttribute('aria-valuenow'));if(event.key==='ArrowLeft'||event.key==='ArrowRight'){event.preventDefault();setRatio(current+(event.key==='ArrowLeft'?-2:2))}else if(event.key==='0'){event.preventDefault();setRatio(defaultRatio)}});
+</script>
+</body>
+</html>

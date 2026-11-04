@@ -1,7 +1,15 @@
 {
   "repository": "jieqiqiu987-cmyk/dmrentals-preview",
-  "updatedAt": "2026-11-04T19:41:13+08:00",
+  "updatedAt": "2026-11-04T20:20:18+08:00",
   "sites": [
+    {
+      "slug": "dispatch-data-export",
+      "name": "派单数据导出",
+      "summary": "展示订单列表统一导出入口、派单数据筛选规则及派单明细 Excel 字段口径。",
+      "path": "previews/dispatch-data-export/",
+      "createdAt": "2026-11-04T20:20:18+08:00",
+      "updatedAt": "2026-11-04T20:20:18+08:00"
+    },
     {
       "slug": "activity-product-inventory",
       "name": "活动商品库存列表",
