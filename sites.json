@@ -1,7 +1,15 @@
 {
   "repository": "jieqiqiu987-cmyk/dmrentals-preview",
-  "updatedAt": "2026-11-06T09:26:00+08:00",
+  "updatedAt": "2026-11-09T11:38:18+08:00",
   "sites": [
+    {
+      "slug": "activity-product-inventory",
+      "name": "活动商品库存列表",
+      "summary": "集中查看活动商品下商家的报名库存、订单占用和派单资格，并支持商家维护库存。",
+      "path": "previews/activity-product-inventory/",
+      "createdAt": "2026-11-04T13:42:34+08:00",
+      "updatedAt": "2026-11-09T11:38:18+08:00"
+    },
     {
       "slug": "dispatch-data-export",
       "name": "派单数据导出",
@@ -9,14 +17,6 @@
       "path": "previews/dispatch-data-export/",
       "createdAt": "2026-11-04T20:20:18+08:00",
       "updatedAt": "2026-11-06T09:26:00+08:00"
-    },
-    {
-      "slug": "activity-product-inventory",
-      "name": "活动商品库存列表",
-      "summary": "集中查看活动商品下商家的报名库存、订单占用和派单资格，并支持商家维护库存。",
-      "path": "previews/activity-product-inventory/",
-      "createdAt": "2026-11-04T13:42:34+08:00",
-      "updatedAt": "2026-11-05T17:10:56+08:00"
     },
     {
       "slug": "transit-dispatch-rule",
