@@ -518,7 +518,7 @@
                             <div id="scheduleSavedView" class="config-saved-row"><div id="savedDispatchPeriods" class="saved-period-list"></div><button class="btn config-edit-button" type="button" id="editDispatchPeriods" aria-controls="scheduleEditor">编辑</button></div>
                             <div id="scheduleEditor" class="config-editor" hidden>
                             <div id="dispatchPeriodRows" class="dispatch-period-rows" aria-label="停止自动派单时段"></div>
-                            <p id="scheduleEmpty" class="schedule-empty">尚未配置时段，请添加时间段。</p>
+                            <p id="scheduleEmpty" class="schedule-empty">请至少添加 1 个完整时间段。</p>
                             <button type="button" class="editor-link" id="addDispatchPeriod" aria-describedby="scheduleLimitHint" aria-disabled="false">＋ 添加时间段</button>
                             <p id="scheduleLimitHint" class="schedule-limit-hint" role="status" hidden></p>
                             <p id="scheduleError" class="config-error" role="alert" hidden></p>
@@ -631,6 +631,20 @@
           <section id="historyView" class="review-demo release-view" aria-label="版本更新说明" hidden>
             <div class="demo-head"><div><h2>版本更新说明</h2><p>记录就近派单规则需求已公开发布的内容。</p></div></div>
             <ol id="releaseHistoryList" class="release-list">
+              <li class="release-entry" data-version="v1.1">
+                <header class="release-heading">
+                  <h3>v1.1 优化定时启停配置</h3>
+                  <time datetime="2026-11-16">2026-11-16</time>
+                </header>
+                <h4>原型功能</h4>
+                <ul>
+                  <li>无已保存时段时，勾选“启用定时启停”直接进入编辑，取消编辑自动取消勾选。已有时段时重新勾选，直接展示已保存的配置。</li>
+                </ul>
+                <h4>PRD 规则</h4>
+                <ul>
+                  <li>定时启停至少保存一个完整时段才生效。有历史时段时，取消编辑恢复已保存配置并保留勾选。精简自动启停时间段说明。</li>
+                </ul>
+              </li>
               <li class="release-entry" data-version="v1.0">
                 <header class="release-heading">
                   <h3>v1.0 首次发布</h3>
@@ -697,7 +711,6 @@
     const configStorageKey='dispatch-config-settings-v1';
     let storedConfig={};
     try{storedConfig=JSON.parse(localStorage.getItem(configStorageKey))||{}}catch{}
-    const globalSwitches={auto:storedConfig.switches?.auto!==false,system:storedConfig.switches?.system!==false,schedule:storedConfig.switches?.schedule!==false};
     const ruleOverrides=storedConfig.ruleOverrides||{};
     const createdRules=Array.isArray(storedConfig.createdRules)?storedConfig.createdRules:[];
     let editingRule=null;
@@ -709,6 +722,11 @@
 
     let savedDispatchPeriods=Array.isArray(storedConfig.dispatchStopPeriods)
       ?storedConfig.dispatchStopPeriods:[];
+    const globalSwitches={
+      auto:storedConfig.switches?.auto!==false,
+      system:storedConfig.switches?.system!==false,
+      schedule:savedDispatchPeriods.length>0&&storedConfig.switches?.schedule!==false
+    };
     let modalReturnFocus=null,pendingChange=null,scheduleDraftInitialized=false,previewAutoOff=false,previewTimedPause=false,lastAutoNoticeKey=null;
     let activeTimeInput=null,timePickerDraft={hour:0,minute:0};
     const configurationEditing={schedule:false,stores:false,timeout:false};
@@ -734,8 +752,9 @@
     function renderGlobalSwitch(key){
       const enabled=globalSwitches[key];
       if(key==='schedule'){
-        $('#dispatchScheduleEnabled').checked=enabled;
-        $('#scheduleSettings').hidden=!globalSwitches.auto||!enabled;
+        const checked=enabled||configurationEditing.schedule;
+        $('#dispatchScheduleEnabled').checked=checked;
+        $('#scheduleSettings').hidden=!globalSwitches.auto||!checked;
         if($('#scheduleSettings').hidden)closeDispatchTimePicker(false);
         if(!scheduleDraftInitialized)renderDispatchPeriods();
         return;
@@ -839,7 +858,7 @@
       switch:`
         <section class="prd-section"><h3>配置分组</h3><p>自动派单规则和在途规则各用一张卡片，总开关与本组配置在同一卡片内维护。总开关默认开启，已有配置时回填已保存状态。每个开关下方仅展示当前状态说明：开启显示执行方式，关闭显示停用效果与恢复方式。确认切换后更新文案，取消确认则保留原说明。</p></section>
         <section class="prd-section"><h3>自动派单规则总开关</h3><p>控制快租、闪租全部自动派单规则是否执行。关闭后全部自动派单规则均不生效。关闭期间生成的订单不执行自动派单，重新开启后也不补派；重新开启仅对新进入订单生效。</p></section>
-        <section class="prd-section"><h3>自动启停时间段配置项</h3><p>与在途规则下的“在途适用店铺”同级组织方式一致：在自动派单卡片内，用独立配置区维护“自动启停时间段”。总开关开启后展示，默认启用定时启停；勾选或取消不弹窗。</p><ul><li>启用且配置了时段：该时段内暂不派单。时段结束后，自动补派未经人工处理且符合派单条件的积压订单，前提是总开关仍开启。</li><li>取消本项配置：取消时段限制，按各规则配置执行。已保存时段保留。总开关关闭时，本配置不触发恢复或补派；关闭期间生成的订单也不纳入重新开启或时段结束后的补派范围。</li><li>进入页面回填已有配置；没有时段则显示空态，不预填示例。点击开始或结束时间框展开小时、分钟双列下拉，支持滚动、点选与键盘上下键；点击“确定”回填，点击“取消”、外部或 Esc 放弃本次选择。跨天结束仍显示“次日”。</li><li>每次最多配置 10 个时间段，空白行也计入数量。达到 10 个后新增入口置灰，展示上限提示；再次点击仅提示，不新增。删除后恢复新增。保存前再次校验上限，已有超限配置完整保留，须删减至 10 个后保存。</li><li>页面不展示顶部生效范围提示条及时间段保存状态文字；保存、总开关确认弹窗中的生效提醒保留。</li><li>“？”悬停或键盘聚焦展示本项的适用范围、时段结束补派和总开关优先关系。</li></ul></section>
+        <section class="prd-section"><h3>自动启停时间段配置项</h3><p>总开关开启后，可配置自动启停时间段。勾选或取消勾选不弹窗。</p><ul><li>无历史时段时，默认未勾选。勾选后直接进入编辑，至少保存一个完整时段才生效。此时取消编辑会放弃未保存的时段并自动取消勾选。</li><li>已有时段时，勾选后展示已保存的时段，点击“编辑”可修改。取消编辑恢复已保存的时段，保留勾选。编辑时删空所有时段会阻止保存，提示“请至少配置 1 个时间段。”</li><li>启用且配置了时段：该时段内暂不派单。时段结束后，自动补派未经人工处理且符合派单条件的积压订单，前提是总开关仍开启。</li><li>取消本项配置：取消时段限制，按各规则配置执行。已保存时段保留。总开关关闭时，本配置不触发恢复或补派；关闭期间生成的订单也不纳入重新开启或时段结束后的补派范围。</li><li>进入页面回填已有配置；首次编辑时不预填示例。点击开始或结束时间框展开小时、分钟双列下拉，支持滚动、点选与键盘上下键；点击“确定”回填，点击“取消”、外部或 Esc 放弃本次选择。跨天结束仍显示“次日”。</li><li>每次最多配置 10 个时间段，空白行也计入数量。达到 10 个后新增入口置灰，展示上限提示；再次点击仅提示，不新增。删除后恢复新增。保存前再次校验上限，已有超限配置完整保留，须删减至 10 个后保存。</li><li>页面不展示顶部生效范围提示条及时间段保存状态文字；保存、总开关确认弹窗中的生效提醒保留。</li><li>“？”悬停或键盘聚焦展示本项的适用范围、时段结束补派和总开关优先关系。</li></ul></section>
         <section class="prd-section"><h3>在途规则</h3><p>开启后，新进入订单按配置的适用店铺和接单时效执行在途规则；关闭后，新进入订单不执行在途规则。关闭时收起配置，重新开启时回填已保存内容。</p><ul><li>适用店铺可多选：随心租、惠印文印、商家精选；默认选中惠印文印、商家精选。点击“保存适用店铺”后确认保存。</li><li>接单时效默认 60 分钟，填写正整数，点击“保存接单时限”后确认保存。</li></ul></section>
         <section class="prd-section"><h3>查看、编辑与取消</h3><p>时间段、在途适用店铺和接单时限各自独立维护查看与编辑状态。默认仅展示已保存内容及“编辑”按钮；未配置时显示空态。</p><ul><li>点击本项“编辑”，回填已保存内容，并显示可修改控件、“取消编辑”和保存按钮。只有内容变更后才可保存。</li><li>点击“取消编辑”，放弃本项全部未保存修改，恢复已保存内容并返回查看状态；其他正在编辑的配置项不受影响。时间下拉和校验提示同步关闭。</li><li>保存仍先校验并提示生效范围，确认成功后更新已保存内容并返回查看状态；取消保存确认则保留编辑内容，可继续修改。</li><li>每项独立保存，保存一项不会把其他项的未保存草稿写入配置。刷新后均展示已保存内容。</li></ul></section>
         <section class="prd-section"><h3>配置生效范围与提醒</h3><p>以上配置变更仅针对新进入的订单，已进入派单流程的订单继续按原规则执行。保存配置、总开关启停时，弹出确认提醒；确认后保存，取消不变更已保存内容。“启用定时启停”勾选或取消时不弹窗，直接更新配置项并展开或收起时间配置，保留已保存时段。时段结束后的积压补派沿用已生效配置执行。</p></section>`,
@@ -878,12 +897,18 @@
       transitTimeout.disabled=!editing;
       $('#savedTransitTimeout').textContent=savedTransitTimeout+' 分钟';
     }
-    $('#editDispatchPeriods').onclick=()=>{
-      configurationEditing.schedule=true;renderDispatchPeriods();
+    function beginDispatchPeriodEdit(){
+      configurationEditing.schedule=true;
+      renderDispatchPeriods();
+      renderGlobalSwitch('schedule');
       ($('#dispatchPeriodRows input')||$('#addDispatchPeriod')).focus();
-    };
+    }
+    $('#editDispatchPeriods').onclick=beginDispatchPeriodEdit;
     $('#cancelDispatchPeriods').onclick=()=>{
-      configurationEditing.schedule=false;renderDispatchPeriods();$('#editDispatchPeriods').focus();
+      configurationEditing.schedule=false;
+      renderDispatchPeriods();
+      renderGlobalSwitch('schedule');
+      (globalSwitches.schedule?$('#editDispatchPeriods'):$('#dispatchScheduleEnabled')).focus();
     };
     $('#editTransitStores').onclick=()=>{
       configurationEditing.stores=true;
@@ -1843,6 +1868,12 @@
     function saveDispatchSchedule(){
       if(!configurationEditing.schedule)return;
       const rows=$$('#dispatchPeriodRows .schedule-edit-row');
+      if(!rows.length){
+        $('#scheduleError').textContent='请至少配置 1 个时间段。';
+        $('#scheduleError').hidden=false;
+        $('#addDispatchPeriod').focus();
+        return;
+      }
       if(rows.length>10){$('#scheduleError').textContent='最多支持 10 个时间段，请删除超出部分后保存。';$('#scheduleError').hidden=false;return}
       for(const row of rows){
         for(const label of ['开始时间','结束时间']){
@@ -1855,8 +1886,11 @@
       const periods=scheduleDraftValues();
       confirmConfigurationChange('确认保存自动启停时间段？',()=>{
         savedDispatchPeriods=periods;
+        globalSwitches.schedule=true;
         configurationEditing.schedule=false;
-        renderDispatchPeriods();$('#editDispatchPeriods').focus();
+        renderDispatchPeriods();
+        renderGlobalSwitch('schedule');
+        $('#editDispatchPeriods').focus();
         saveFeedback('自动派单启停时段已保存');
       });
     }
@@ -1909,9 +1943,18 @@
     }
     ['auto','system'].forEach(key=>$('#globalSwitch-'+key).onclick=()=>openGlobalConfirm(key));
     $('#dispatchScheduleEnabled').onchange=event=>{
-      globalSwitches.schedule=event.target.checked;
+      const checked=event.target.checked;
+      if(checked&&!savedDispatchPeriods.length){
+        beginDispatchPeriodEdit();
+        return;
+      }
+      if(configurationEditing.schedule){
+        configurationEditing.schedule=false;
+        renderDispatchPeriods();
+      }
+      globalSwitches.schedule=checked;
       renderGlobalSwitch('schedule');
-      saveFeedback('定时启停配置已'+(globalSwitches.schedule?'启用':'停用'));
+      saveFeedback('定时启停配置已'+(checked?'启用':'停用'));
     };
     $('#modalClose').onclick=closeModal;
     $('#modalCancel').onclick=closeModal;
