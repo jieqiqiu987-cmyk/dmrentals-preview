@@ -40,6 +40,16 @@
     .split.prd-collapsed{grid-template-columns:minmax(0,1fr) 0 66px}.split.prd-collapsed .divider{display:none}.split.prd-collapsed .prd{align-self:stretch;position:relative;z-index:6}.split.prd-collapsed .prd-head{height:100%;padding:10px;align-items:center;flex-direction:column;position:relative;z-index:7}.split.prd-collapsed .prd-head h2,.split.prd-collapsed .prd-content{display:none}.split.prd-collapsed .prd-toggle{writing-mode:vertical-rl;min-height:110px;position:relative;z-index:8}
 
 
+    .review-demo.release-view{min-height:0}
+    .release-list{list-style:none;padding:0;margin:0}
+    .release-entry{padding:18px 20px;border:1px solid #dce8e2;border-radius:7px;background:#fff}
+    .release-entry+.release-entry{margin-top:14px}
+    .release-heading{display:flex;justify-content:space-between;align-items:baseline;gap:8px 14px;flex-wrap:wrap;padding-bottom:10px;border-bottom:1px solid #e8efeb}
+    .release-heading h3{margin:0;color:#255849;font-size:15px}
+    .release-heading time{color:#657c73;font-size:12px}
+    .release-entry h4{margin:13px 0 4px;color:#305248;font-size:13px}
+    .release-entry ul{margin:0;padding-left:19px;color:#4d625c;font-size:13px;line-height:1.7}
+    .release-entry li+li{margin-top:5px}
     .review-demo{padding:22px;background:#f5f7fa;min-height:720px}
     .demo-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:18px}
     .demo-head h2{font-size:18px;margin:0 0 5px;color:#263c36}.demo-head p{font-size:12px;color:#75817e;margin:0}
@@ -340,6 +350,7 @@
         <button class="rail-btn active" data-view="auto"><span class="n">02</span><span><strong>自动派单规则</strong><small>包含快租、闪租二级项</small></span></button>
         <button class="rail-btn" data-view="sim"><span class="n">03</span><span><strong>派单模拟</strong><small>逐步验证同城首派与转单</small></span></button>
         <button class="rail-btn" data-view="flow"><span class="n">04</span><span><strong>派单流程</strong><small>查看完整判断与分支</small></span></button>
+        <button class="rail-btn" data-view="history"><span class="n">05</span><span><strong>版本更新说明</strong><small>查看首次发布记录</small></span></button>
       </nav>
       <div class="rail-note"><b>本次调整范围</b>在途规则在总配置维护，就近派单条件按单条自动派单规则维护。</div>
     </aside>
@@ -617,6 +628,32 @@
             <div class="dispatch-chart-viewport" id="dispatchChartViewport" tabindex="0" aria-label="可滚动的派单流程图"><div class="dispatch-chart-scale" id="dispatchChartScale"><svg id="dispatchFlowSvg" width="1120" height="1690" viewBox="0 0 1120 1690" role="img" aria-label="自动派单与就近派单完整流程"></svg></div></div>
           </section>
 
+          <section id="historyView" class="review-demo release-view" aria-label="版本更新说明" hidden>
+            <div class="demo-head"><div><h2>版本更新说明</h2><p>记录就近派单规则需求已公开发布的内容。</p></div></div>
+            <ol id="releaseHistoryList" class="release-list">
+              <li class="release-entry" data-version="v1.0">
+                <header class="release-heading">
+                  <h3>v1.0 首次发布</h3>
+                  <time datetime="2026-11-16">2026-11-16</time>
+                </header>
+                <h4>原型功能</h4>
+                <ul>
+                  <li>总配置集中管理自动派单总开关、启停时间段和在途规则。支持在途适用店铺及接单时限配置。</li>
+                  <li>快租和闪租各自维护商品自动派单规则。编辑规则时可启用就近派单，设置订单金额、商品数量和租期。右侧说明可预览条件校验、总开关关闭和定时暂停的提示。</li>
+                  <li>派单模拟支持调整配送城市、商家状态、库存和首派额度，逐步验证接单、拒单、超时及连续订单。派单流程图展示判断及分支，可缩放查看。</li>
+                </ul>
+                <h4>PRD 规则</h4>
+                <ul>
+                  <li>就近条件每个维度最多 10 条，同一维度任一条命中即可，已配置的维度须同时命中。配置值必须大于 0，金额最多两位小数，数量和租期为正整数。闭区间下限须小于上限，同一维度的范围不能重复、包含、交叠或共用边界。</li>
+                  <li>以订单收货城市和商家默认发货城市判断同城。命中就近条件时，从原应首派商家的优先级起，查找可派且有剩余额度的同城商家。找不到同城商家时按原顺序首派。</li>
+                  <li>仅实际首派商家占用流量额度。当前可派商家的额度均耗尽时统一重置，停用或无库存的商家不阻塞重置。</li>
+                  <li>主动拒单或超时拒单后，每次转单从首位优先级重新判断，持续优先同城。跳过本单已拒单、停用或无库存的商家。转单不占额度，达到配置上限或无可派商家时进入转单池。</li>
+                  <li>总开关关闭期间生成的订单，重新开启后也不补派。定时暂停期间的积压订单，在总开关开启且时段结束后，仅对未经人工处理且符合派单条件的订单自动补派。已进入派单流程的订单沿用原规则。</li>
+                </ul>
+              </li>
+            </ol>
+          </section>
+
         </section>
 
         <button class="divider" id="divider" aria-label="调整原型与 PRD 面板宽度" aria-valuemin="50" aria-valuemax="78" aria-valuenow="70" title="拖动调整宽度；方向键微调；双击恢复默认"></button>
@@ -720,6 +757,7 @@
     }
 
     const copy={
+      history:{stage:'版本更新说明',desc:'查看就近派单规则需求的公开发布记录。',crumb:'版本更新说明',prd:'版本更新说明 · 记录口径'},
       sim:{stage:'派单模拟',desc:'逐步验证就近派单对首派、转单和连续订单额度的影响。',crumb:'派单模拟',prd:'派单模拟 · 使用说明'},
       flow:{stage:'派单流程',desc:'查看自动派单阶段的就近判断、商家处理与转单分支。',crumb:'派单流程',prd:'派单流程 · 规则说明'},
       auto:{stage:'运营后台 · 自动派单规则',desc:'按快租或闪租维护商品自动派单规则。',crumb:'自动派单规则',prd:'自动派单规则 · 页面说明'},
@@ -774,6 +812,7 @@
     ];
 
     const prd={
+      history:`<section class="prd-section"><h3>记录口径</h3><p>按发布时间从新到旧展示已发布版本。首次发布记录分别列出原型可操作的功能和 PRD 确认的派单规则。</p></section>`,
       sim:`
         <section class="prd-section"><h3>模拟范围</h3><p>参考在途规则原型，通过配置条件和接单、主动拒单、模拟超时拒单按钮，逐步执行自动派单阶段。使用独立示例数据，不写入实际规则，也不执行在途规则。</p></section>
         <section class="prd-section"><h3>示例条件</h3><p>设置用户城市、金额、数量、租期、总开关、暂停时段命中状态、就近开关与转单上限。演示门槛使用大于等于，留空的维度不限；已填写的维度同时满足才触发就近。就近门槛必须大于 0，金额最多两位小数，数量和租期须为正整数；订单值用于验证是否命中这些门槛。</p><p>示例商家可修改发货城市、启停、活动库存，以及剩余／每轮首派额度。等待商家处理或等待定时恢复时锁定条件。无库存或停用商家跳过。“首派额度”对应系统流量占比，仅首次派单占用，转单不占用。每家每轮额度默认 1，可按模拟场景分别编辑剩余额度和每轮额度；仅用于演示扣减和重置，不代表实际流量占比百分数或换算方式。</p></section>
@@ -1390,8 +1429,8 @@
       if(view!=='auto'){previewAutoOff=false;previewTimedPause=false;renderAutoNotice()}
       const navView=view==='editor'?'auto':view;
       $$('.rail-btn,.tab').forEach(b=>b.classList.toggle('active',b.dataset.view===navView));
-      ['auto','editor','switch','sim','flow'].forEach(v=>$('#'+v+'View').hidden=v!==view);
-      $('.admin').hidden=view==='sim'||view==='flow';
+      ['auto','editor','switch','sim','flow','history'].forEach(v=>$('#'+v+'View').hidden=v!==view);
+      $('.admin').hidden=['sim','flow','history'].includes(view);
       if(view==='flow')requestAnimationFrame(fitDispatchChart);
       $('#stageTitle').textContent=copy[view].stage;
       $('#stageDesc').textContent=copy[view].desc;
