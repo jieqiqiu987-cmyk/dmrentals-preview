@@ -1,7 +1,15 @@
 {
   "repository": "jieqiqiu987-cmyk/dmrentals-preview",
-  "updatedAt": "2026-11-13T17:34:20+08:00",
+  "updatedAt": "2026-11-16T18:55:19+08:00",
   "sites": [
+    {
+      "slug": "nearby-dispatch-rules",
+      "name": "就近派单规则需求",
+      "summary": "展示同城优先派单、转单顺序与首派流量额度，并提供配置校验和连续订单模拟。",
+      "path": "previews/nearby-dispatch-rules/",
+      "createdAt": "2026-11-16T18:55:19+08:00",
+      "updatedAt": "2026-11-16T18:55:19+08:00"
+    },
     {
       "slug": "activity-product-inventory",
       "name": "活动商品库存列表",
