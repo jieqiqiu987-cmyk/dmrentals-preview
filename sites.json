@@ -1,7 +1,15 @@
 {
   "repository": "jieqiqiu987-cmyk/dmrentals-preview",
-  "updatedAt": "2026-11-16T19:32:27+08:00",
+  "updatedAt": "2026-11-18T11:14:06+08:00",
   "sites": [
+    {
+      "slug": "transit-dispatch-rule",
+      "name": "在途规则派单链路优化",
+      "summary": "展示在途商家优先派单、60 分钟超时拒单、商家轮询及自动派单衔接规则。",
+      "path": "previews/transit-dispatch-rule/",
+      "createdAt": "2026-11-04T23:01:11+08:00",
+      "updatedAt": "2026-11-18T11:14:06+08:00"
+    },
     {
       "slug": "nearby-dispatch-rules",
       "name": "就近派单规则需求",
@@ -17,14 +25,6 @@
       "path": "previews/activity-product-inventory/",
       "createdAt": "2026-11-04T13:42:34+08:00",
       "updatedAt": "2026-11-13T17:34:20+08:00"
-    },
-    {
-      "slug": "transit-dispatch-rule",
-      "name": "在途规则派单链路优化",
-      "summary": "展示在途商家优先派单、60 分钟超时拒单、商家轮询及自动派单衔接规则。",
-      "path": "previews/transit-dispatch-rule/",
-      "createdAt": "2026-11-04T23:01:11+08:00",
-      "updatedAt": "2026-11-10T20:05:41+08:00"
     },
     {
       "slug": "dispatch-data-export",
