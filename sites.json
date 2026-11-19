@@ -1,14 +1,14 @@
 {
   "repository": "jieqiqiu987-cmyk/dmrentals-preview",
-  "updatedAt": "2026-11-19T01:47:54+08:00",
+  "updatedAt": "2026-11-19T18:54:01+08:00",
   "sites": [
     {
       "slug": "activity-product-inventory",
       "name": "活动商品库存列表",
-      "summary": "展示活动商品报名与库存管理、派单资格及库存变化规则，并提供可执行的场景模拟。",
+      "summary": "展示商家报名只读查看、报名商品库存调整、派单资格及可执行的库存场景模拟。",
       "path": "previews/activity-product-inventory/",
       "createdAt": "2026-11-04T13:42:34+08:00",
-      "updatedAt": "2026-11-19T01:47:54+08:00"
+      "updatedAt": "2026-11-19T18:54:01+08:00"
     },
     {
       "slug": "transit-dispatch-rule",
